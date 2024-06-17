@@ -1,12 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const authRoutes = require("./routes/authRoutes");
 
 // start an express app
 const app = express();
 
 // middleware, use static middleware for CSS and images
 app.use(express.static("public"));
+app.use(express.json());
 
 // view engine, register the view engine
 app.set("view engine", "ejs");
@@ -26,3 +28,4 @@ mongoose
 // routes
 app.get("/", (req, res) => res.render("home"));
 app.get("/smoothies", (req, res) => res.render("smoothies"));
+app.use(authRoutes);
