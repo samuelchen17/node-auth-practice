@@ -1,16 +1,19 @@
 const User = require("../models/userModel");
 
-// handle erros
+// handle errors
 const handleErrors = (err) => {
-  // console.log(err.message, err.code);
+  console.log(err.message, err.code);
   let errors = { email: "", password: "" };
-  console.log(err);
+
+  // duplicate error code
+  if (err.code === 11000) {
+    errors.email = "that email is already in use";
+    return errors;
+  }
+
   // validation errors
   if (err.message.includes("user validation failed")) {
-    // use object.values to grab the values from the erros object as an array
-    // Object.values(err.errors).forEach((error) => {
-    //   console.log(errors.properties);
-    // });
+    // destructure properties
     Object.values(err.errors).forEach(({ properties }) => {
       errors[properties.path] = properties.message;
     });
@@ -36,6 +39,7 @@ module.exports.signup_post = async (req, res) => {
     res.status(201).json(user);
   } catch (err) {
     const errors = handleErrors(err);
+    // send it back to user in json format
     res.status(400).json({ errors });
   }
 };
