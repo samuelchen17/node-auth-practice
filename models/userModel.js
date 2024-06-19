@@ -24,6 +24,25 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// static method to login user
+// method will be called login here
+userSchema.statics.login = async function (email, password) {
+  // this = User in this case, "this" is the user model itself, not an instance
+  const user = await this.findOne({ email: email });
+
+  // check if user exists
+  if (user) {
+    // compare sign in password with DB password = user.password
+    // auth will be true if same pw, false if not
+    const auth = await bcrypt.compare(password, user.password);
+    if (auth) {
+      return user;
+    }
+    throw Error("incorrect password");
+  }
+  throw Error("incorrect email");
+};
+
 // the `user` here is important, must match the data base "users"
 const User = mongoose.model("user", userSchema);
 
